@@ -3,7 +3,11 @@ const config = require('../config');
 const { createAlert, resolveAlert } = require('../notify/alert');
 const log = require('../logger');
 
+let paused = true;
+
 function check() {
+  if (paused) return;
+
   const now = Date.now();
   const devices = q.getAllDevices.all();
 
@@ -39,4 +43,8 @@ function start() {
   return interval;
 }
 
-module.exports = { start, check };
+function resume() {
+  paused = false;
+}
+
+module.exports = { start, check, resume };

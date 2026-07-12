@@ -19,6 +19,13 @@ async function main() {
   const watchdogInterval = watchdog.start();
   const bombaInterval = bombaSinEfecto.start();
 
+  const gracePeriodMs = 2 * 60 * 1000;
+  const graceTimeout = setTimeout(() => {
+    log.info('WATCHDOG', 'Grace period finalizado, monitoreo activo');
+    watchdog.resume();
+  }, gracePeriodMs);
+  log.info('WATCHDOG', `Grace period de ${gracePeriodMs / 1000}s antes de alertar dispositivos caídos`);
+
   const reminderIntervalMs = 60 * 60 * 1000;
   const reminderInterval = setInterval(() => {
     checkReminders('aguada_baja', config.rules.aguadaBaja.reminderCooldownMs);
@@ -39,6 +46,7 @@ async function main() {
 
   function shutdown() {
     log.info('SERVER', 'Cerrando...');
+    clearTimeout(graceTimeout);
     clearInterval(watchdogInterval);
     clearInterval(bombaInterval);
     clearInterval(reminderInterval);
