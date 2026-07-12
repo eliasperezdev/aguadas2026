@@ -24,13 +24,15 @@ function createClient() {
   });
 
   client.on('message', (topic, payload) => {
+    const raw = payload.toString();
+    log.info('MQTT', `← ${topic} = ${raw}`);
+
     const parsed = parse(topic);
     if (!parsed) {
       log.warn('MQTT', 'Topic no reconocido:', topic);
       return;
     }
 
-    const raw = payload.toString();
     let data;
     try {
       data = JSON.parse(raw);

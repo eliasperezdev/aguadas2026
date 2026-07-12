@@ -10,10 +10,17 @@ function createAlert(device_id, tipo, mensaje) {
   q.insertAlert.run(device_id, tipo, mensaje, now);
 
   const alert = q.getLastAlert.get();
-  log.info('ALERT', `Creada: ${tipo} - ${device_id} - ${mensaje}`);
+  log.info('ALERT', `🔴 CREADA: ${tipo} - ${device_id}`);
+  log.info('ALERT', `   ${mensaje}`);
 
-  mailer.sendAlert(alert).catch(err => {
-    log.error('ALERT', 'Error enviando mail:', err.message);
+  mailer.sendAlert(alert).then(sent => {
+    if (sent) {
+      log.info('MAIL', `✓ Email alerta enviado: ${tipo} - ${device_id}`);
+    } else {
+      log.warn('MAIL', `✗ Email alerta NO enviado: ${tipo} - ${device_id}`);
+    }
+  }).catch(err => {
+    log.error('MAIL', `Error enviando email alerta: ${err.message}`);
   });
 
   return alert;
@@ -24,10 +31,16 @@ function resolveAlert(device_id, tipo) {
   if (!active) return null;
 
   q.resolveAlert.run(active.id);
-  log.info('ALERT', `Resuelta: ${tipo} - ${device_id}`);
+  log.info('ALERT', `🟢 RESUELTA: ${tipo} - ${device_id}`);
 
-  mailer.sendResolution(active).catch(err => {
-    log.error('ALERT', 'Error enviando mail de resolución:', err.message);
+  mailer.sendResolution(active).then(sent => {
+    if (sent) {
+      log.info('MAIL', `✓ Email resolución enviado: ${tipo} - ${device_id}`);
+    } else {
+      log.warn('MAIL', `✗ Email resolución NO enviado: ${tipo} - ${device_id}`);
+    }
+  }).catch(err => {
+    log.error('MAIL', `Error enviando email resolución: ${err.message}`);
   });
 
   return active;
@@ -48,10 +61,12 @@ function checkReminders(tipo, cooldownMs) {
     mailer.sendReminder(alert, horasActiva).then(sent => {
       if (sent) {
         q.updateAlertNotification.run(now, alert.id);
-        log.info('ALERT', `Recordatorio enviado: ${tipo} - ${alert.device_id} (${horasActiva}hs activa)`);
+        log.info('MAIL', `✓ Recordatorio enviado: ${tipo} - ${alert.device_id} (${horasActiva}hs)`);
+      } else {
+        log.warn('MAIL', `✗ Recordatorio NO enviado: ${tipo} - ${alert.device_id}`);
       }
     }).catch(err => {
-      log.error('ALERT', 'Error enviando recordatorio:', err.message);
+      log.error('MAIL', `Error enviando recordatorio: ${err.message}`);
     });
   });
 }
