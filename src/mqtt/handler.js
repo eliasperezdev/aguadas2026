@@ -13,6 +13,7 @@ function handleMessage(parsed, data) {
   q.upsertDevice.run(device_id, tipo, ts);
 
   if (campo === 'nivel') {
+    log.info('PAYLOAD', `Datos recibidos: ${JSON.stringify(data)}`);
     const { distancia_cm, nivel_pct } = data;
     q.insertReading.run(device_id, ts, distancia_cm, nivel_pct);
     log.info('DB', `✓ Reading: ${device_id} | ${distancia_cm}cm | ${nivel_pct}%`);
