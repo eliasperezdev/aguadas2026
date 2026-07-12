@@ -10,6 +10,7 @@ const log = require('./logger');
 const cron = require('node-cron');
 
 async function main() {
+  console.log("Hola mundo")
   log.info('SERVER', '=== Servidor Granja ===');
 
   await mailer.init();
