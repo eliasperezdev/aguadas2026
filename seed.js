@@ -137,9 +137,13 @@ function run() {
   console.log('=== Seed de datos realistas ===\n');
  
   const deleteReadings = db.prepare('DELETE FROM readings WHERE device_id IN (?, ?)');
+  const deletePumpEvents = db.prepare('DELETE FROM pump_events WHERE device_id IN (?, ?)');
+  const deleteAlerts = db.prepare('DELETE FROM alerts WHERE device_id IN (?, ?)');
   const deleteDevices = db.prepare('DELETE FROM devices WHERE id IN (?, ?)');
- 
+
   deleteReadings.run('A1', 'T1');
+  deletePumpEvents.run('A1', 'T1');
+  deleteAlerts.run('A1', 'T1');
   deleteDevices.run('A1', 'T1');
   console.log('Datos anteriores limpiados\n');
  

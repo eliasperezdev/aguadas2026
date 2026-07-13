@@ -18,14 +18,13 @@ function handleMessage(parsed, data) {
     
     const lastReading = q.getLastReading.get(device_id);
     const shouldInsert = !lastReading || 
-      Math.abs(lastReading.nivel_pct - nivel_pct) >= 1 ||
-      Math.abs(lastReading.distancia_cm - distancia_cm) >= 1;
+      Math.abs(lastReading.nivel_pct - nivel_pct) >= 3;
     
     if (shouldInsert) {
       q.insertReading.run(device_id, ts, distancia_cm, nivel_pct);
       log.info('DB', `✓ Reading: ${device_id} | ${distancia_cm}cm | ${nivel_pct}%`);
     } else {
-      log.info('DB', `⊘ Skip duplicado: ${device_id} | ${distancia_cm}cm | ${nivel_pct}%`);
+      log.info('DB', `⊘ Skip duplicado: ${device_id} | ${nivel_pct}%`);
     }
 
     if (tipo === 'aguada') {
